@@ -5,25 +5,29 @@ function View(defs)
 {
     var
 	api = this,
+	elt,
 	def,
 	form,
+	f,
 	m;
 
     for (m in defs) {
 	def = defs[m];
-	if (def.form) {
-	    form = document.forms[def.form];
+	if (def.type == 'form') {
+	    form = document.forms[def.id];
 	    if (!form) {
 		continue;
 	    }
 	    for (var f in form) {
-		api[f] = new InputAccessor(form[f]);
+		if (form.hasOwnProperty(f)) {
+		    api[f] = new InputAccessor(form[f]);
+		}
 	    }
-	} else if (def.element) {
-	  var elt = document.getElementById(def.element);
+	} else if (def.type == 'element') {
+	  elt = document.getElementById(def.id);
 	  api[m] = new ElementAccessor(elt);
 	} else {
-	  var elt = document.getElementById(m);
+	  elt = document.getElementById(m);
 	  api[m] = new ElementAccessor(elt);
 	}
     }

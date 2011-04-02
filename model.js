@@ -1,14 +1,23 @@
 function Model(members)
 {
-    var api = this;
-    for (var m in members)
+    var
+      api = this,
+      impl = {},
+      v,
+      m;
+
+    for (m in members)
     {
+	v = members[m];
 	if (typeof members[m] == 'function') {
-	    api[m] = function() {
-		members[m].apply(api, arguments);
-	    };
+	    api[m] = (function(v1) {
+	      return function() {
+		return v1.apply(api, arguments);
+	      };
+	    })(v);
 	} else {
-	  api[m] = new PropertyAccessor(members, m);
+	    impl[m] = v;
+	    api[m] = new PropertyAccessor(impl, m);
 	}
     }
     return api;

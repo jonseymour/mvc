@@ -6,9 +6,9 @@ function Accessor(target, props)
 
   var result = function() {
     if (arguments.length > 0) {
-      result = target.set.apply(target, arguments);
+      return target.set.apply(result, arguments);
     } else {
-      result = target.get();
+      return target.get.apply(result);
     }
   };
 
@@ -17,12 +17,16 @@ function Accessor(target, props)
       result[p] = props[p];
     }
   }
+  result.defaultBinding = target.defaultBinding;
 
   return result;
 }
 
 Accessor.prototype.get = Accessor.NOOP;
 Accessor.prototype.set = Accessor.NOOP;
+Accessor.prototype.defaultBinding = function() {
+    return Binding.VALUE();
+};
 
 function InputAccessor(input)
 {
@@ -36,6 +40,16 @@ InputAccessor.prototype.get=function() {
 InputAccessor.prototype.set= function(arg) {
   this.input.value = arg;
   return undefined;
+};
+
+InputAccessor.prototype.defaultBinding = function() {
+  if (this.input.type == 'button' || this.input.type == 'submit') {
+    return Binding.ACTION();
+  } else if (this.input.type == 'checkbox') {
+    return Binding.INPUT_CHECKED();
+  } else {
+    return Binding.VALUE();
+  }
 };
 
 function ElementAccessor(element)
@@ -52,9 +66,13 @@ ElementAccessor.prototype.set = function(arg) {
   return undefined;
 };
 
+ElementAccessor.prototype.defaultBinding = function() {
+    return Binding.INNER_HTML();
+};
+
 function PropertyAccessor(obj, property)
 {
-  return Accessor(this, obj && property ? { 'object': object, 'property' : property }  : undefined);
+  return Accessor(this, (obj && property) ? { 'object': obj, 'property' : property }  : undefined);
 }
 
 PropertyAccessor.prototype.get = function() {
@@ -66,3 +84,35 @@ PropertyAccessor.prototype.set = function(value) {
   return undefined;
 };
 
+function MultiAccessor(model, keys)
+{
+    return new Accessor
+    (
+	this,
+	(model && keys) ? { 'model': model, 'keys': keys } : undefined
+    );
+}
+
+MultiAccessor.prototype.get = function()
+{
+  var
+    i,
+    k,
+    map = {};
+
+  for (i in this.keys) {
+    k=this.keys[i];
+    map[k] = this.model[k]();
+  }
+  return map;
+};
+
+MultiAccessor.prototype.set = function(map)
+{
+  var i,k;
+  for (i in this.keys) {
+    k=this.keys[i];
+    this.model[k](map[k]);
+  }
+  return;
+};

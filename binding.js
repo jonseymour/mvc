@@ -117,21 +117,48 @@ Binding.ADAPTED_UPDATE = function() {
 // of applying toString on the input or '' otherwise.
 //
 Binding.TO_STRING = function(arg) {
-  return a ? a.toString() : '';
+  return typeof arg == 'undefined' ? '' : arg.toString();
 };
 
 //
 // Creates a simple binding between the value of the view and the model.
 //
 Binding.VALUE=function(config) {
-  return new Binding(config);
+  return new Binding(config,
+  {
+    bind: function(model, view, controller) {
+      var binding=this;
+      Binding.prototype.bind.apply(this, arguments);
+      if (view.input) {
+	view.input.onblur = controller.intercept(
+	  function() {
+	    binding.read();
+	  }
+	);
+      }
+    }
+  });
+};
+
+Binding.ACTION=function(config) {
+  return new Binding(config,
+  {
+    read: Binding.NOOP,
+    update: Binding.NOOP,
+    bind: function(model, view, controller) {
+      view.input.onclick = controller.intercept(function() {
+	model();
+      });
+      return;
+    }
+  });
 };
 
 //
 // Creates a binding that updates the view, but not the model.
 //
 Binding.READONLY=function(config) {
-  var binding = new Binding(config, { read: Binding.NOOP } );
+  return new Binding(config, { read: Binding.NOOP } );
 };
 
 //
@@ -140,7 +167,18 @@ Binding.READONLY=function(config) {
 Binding.INT_VALUE=function(config) {
   return new Binding(config, {
     viewAdapter: parseInt,
-    modelAdapter: Binding.TO_STRING
+    modelAdapter: Binding.TO_STRING,
+    bind: function(model, view, controller) {
+      var binding=this;
+      Binding.prototype.bind.apply(this, arguments);
+      if (view.input) {
+	view.input.onblur = controller.intercept(
+	  function() {
+	    binding.read();
+	  }
+	);
+      }
+    }
   });
 };
 
@@ -151,7 +189,7 @@ Binding.INPUT_TYPE=function(config) {
   return new Binding(config, {
     read: Binding.NOOP,
     update: function() {
-      view.input.type = this.modelAdapter(this.model());
+      this.view.input.type = this.modelAdapter(this.model());
     }
   });
 };
@@ -162,10 +200,22 @@ Binding.INPUT_TYPE=function(config) {
 Binding.INPUT_CHECKED=function(config) {
   return new Binding(config, {
     read: function() {
-      this.model(this.viewAdapter(view.input.checked));
+      this.model(this.viewAdapter(this.view.input.checked));
     },
     update: function() {
-      view.input.checked = this.modelAdapter(this.model());
+      this.view.input.checked = this.modelAdapter(this.model());
+    },
+    bind: function(model, view, controller) {
+      var binding=this;
+      Binding.prototype.bind.apply(this, arguments);
+      if (view.input) {
+	view.input.onchange = controller.intercept(
+	  function() {
+	    binding.read();
+	    return true;
+	  }
+	);
+      }
     }
   });
 };
@@ -179,9 +229,83 @@ Binding.INNER_HTML=function(config)
   return new Binding(config, {
     read: Binding.NOOP,
     update: function() {
-      view.element.innerHTML = this.modelAdapter(this.model());
+      this.view.element.innerHTML = this.modelAdapter(this.model());
     }
   });
+};
+
+Binding.MULTI=function(bindings)
+{
+    return new Binding
+    (
+	{
+	    read: function() {
+		var b;
+		for (b in bindings) {
+		    bindings[b].read();
+		}
+	    },
+	    update: function() {
+		var b;
+		for (b in bindings) {
+		    bindings[b].update();
+		}
+	    }
+	}
+    );
+};
+
+Binding.QUERY=function() {
+    return new Binding
+    (
+	{
+	    read: function() {
+		var
+		query=location.search,
+		pairs=query.substring(1).split('&'),
+		result = {},
+		name,
+		value,
+		i,
+		pair;
+
+		if (pairs != '') {
+
+		    for (i in pairs) {
+		      pair=pairs[i];
+		      i=pair.indexOf('=');
+
+		      if (i>=0) {
+			name = pair.substring(0, i);
+			value = decodeURIComponent(pair.substring(i+1));
+		      } else {
+			name = decodeURIComponent(pair);
+			value = '';
+		      }
+		      result[name] = value;
+		    }
+		}
+		this.model(result);
+		return;
+	    },
+	    update: function() {
+		var
+		  map = this.modelAdapter(this.model()),
+		  search='?',
+		  name;
+		  for (name in map) {
+		    if (search != '?') {
+		      search = search + "&";
+		    }
+		    search += encodeURIComponent(name) + '=' + encodeURIComponent(map[name] || '');
+		  }
+
+		  if (location.search != search) {
+		    location.search = search;
+		  }
+	    }
+	}
+    );
 };
 
 //
@@ -193,6 +317,7 @@ Binding.INNER_HTML=function(config)
 function Binding(config, defaults)
 {
   // replace array with multi binding.
+  var m;
 
   if (!config) {
     config = {};
@@ -233,6 +358,7 @@ function Binding(config, defaults)
 
 Binding.prototype.model = Binding.NOOP;
 Binding.prototype.view = Binding.NOOP;
+Binding.prototype.controller = {};
 Binding.prototype.modelAdapter = Binding.IDENTITY_MAP;
 Binding.prototype.viewAdapter = Binding.IDENTITY_MAP;
 Binding.prototype.read = Binding.ADAPTED_READ;
@@ -241,10 +367,9 @@ Binding.prototype.update = Binding.ADAPTED_UPDATE;
 //
 // Configure the model and view accessor functions for a binding.
 //
-Binding.prototype.bind=function(model, view)
+Binding.prototype.bind=function(model, view, controller)
 {
     this.model = model;
     this.view = view;
+    this.controller = controller;
 };
-
-
