@@ -307,24 +307,28 @@ Binding.QUERY=function() {
 		this.model(result);
 		return;
 	    },
-	    update: function() {
-		var
-		  map = this.modelAdapter(this.model()),
-		  search='?',
-		  name;
-		  for (name in map) {
-		    if (search != '?') {
-		      search = search + "&";
-		    }
-		    search += encodeURIComponent(name) + '=' + encodeURIComponent(map[name] || '');
-		  }
-
-		  if (location.search != search) {
-		    location.search = search;
-		  }
-	    }
+	    modelAdapter: Binding.QUERY.ENCODER,
+	    update: function(arg) {
+		if (arg || this.auto) {
+		    location.replace(location.href.split('?')[0] + '?' + this.modelAdapter(this.model()));
+		}
+	    },
+	    auto: false
 	}
     );
+};
+
+Binding.QUERY.ENCODER = function(map) {
+    var
+    search='',
+    name;
+    for (name in map) {
+	if (search != '') {
+	    search = search + "&";
+	}
+	search += encodeURIComponent(name) + '=' + encodeURIComponent(map[name] || '');
+    }
+    return search;
 };
 
 //
