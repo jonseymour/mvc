@@ -145,11 +145,17 @@ Binding.ACTION=function(config) {
   {
     read: Binding.NOOP,
     update: Binding.NOOP,
+    onclick: function() {
+	this.model();
+    },
     bind: function(model, view, controller) {
-      view.input.onclick = controller.intercept(function() {
-	model();
-      });
-      return;
+	var binding = this;
+	Binding.prototype.bind.apply(this, arguments);
+	view.input.onclick = controller.intercept(
+	    function() {
+		binding.onclick();
+	    });
+	return;
     }
   });
 };
