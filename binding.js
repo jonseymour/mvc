@@ -278,7 +278,7 @@ Binding.QUERY=function() {
     return new Binding
     (
 	{
-	    read: function() {
+	    read: function(arg) {
 		var
 		query=location.search,
 		pairs=query.substring(1).split('&'),
@@ -288,23 +288,24 @@ Binding.QUERY=function() {
 		i,
 		pair;
 
-		if (pairs != '') {
+		if (arg || this.auto) {
+		    if (pairs != '') {
+			for (i in pairs) {
+			    pair=pairs[i];
+			    i=pair.indexOf('=');
 
-		    for (i in pairs) {
-		      pair=pairs[i];
-		      i=pair.indexOf('=');
-
-		      if (i>=0) {
-			name = pair.substring(0, i);
-			value = decodeURIComponent(pair.substring(i+1));
-		      } else {
-			name = decodeURIComponent(pair);
-			value = '';
-		      }
-		      result[name] = value;
+			    if (i>=0) {
+				name = decodeURIComponent(pair.substring(0, i));
+				value = decodeURIComponent(pair.substring(i+1));
+			    } else {
+				name = decodeURIComponent(pair);
+				value = '';
+			    }
+			    result[name] = value;
+			}
 		    }
+		    this.model(result);
 		}
-		this.model(result);
 		return;
 	    },
 	    modelAdapter: Binding.QUERY.ENCODER,
