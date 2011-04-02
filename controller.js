@@ -106,17 +106,15 @@ Controller.prototype.bind = function(model, view) {
 
 Controller.prototype.intercept = function(f)
 {
-  var self=this;
-  return function() {
-    var depth=0;
-    try {
-      depth++;
-      return f.apply(this);
-    } finally {
-      depth--;
-      if (depth == 0) {
-	self.update();
-      }
-    }
-  };
+    var self=this;
+    return function() {
+	try {
+	    return f.apply(this);
+	} catch (x) {
+	    window.alert(x.lineNo + ': ' + x);
+	    throw x;
+	} finally {
+	    self.update();
+	}
+    };
 };
