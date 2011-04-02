@@ -240,6 +240,19 @@ Binding.INNER_HTML=function(config)
   });
 };
 
+Binding.ATTRIBUTE=function(config)
+{
+  return new Binding(config, {
+    read: Binding.NOOP,
+    update: function() {
+	if (config.attribute) {
+	    this.view.element.setAttribute(config.attribute, this.modelAdapter(this.model()));
+	}
+	return;
+    }
+  });
+};
+
 Binding.MULTI=function(bindings)
 {
     return new Binding
