@@ -123,14 +123,11 @@ configuration map:
 
 </dl>
 
-
-
 Accessors
 =========
 Accessors are functions that address a single model or view element. When invoked with no arguments, 
 an accessor returns the value of the accessed element. When invoked with one argument, 
-an accessor is used to set the value accessed element to the specified argument.
-
+an accessor is used to set the value of the accessed element to the specified argument.
 
 
 AUTHOR
