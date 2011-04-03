@@ -18,7 +18,7 @@
 // INPUT_VALUE
 //   Creates a binding between the value of an view input element and
 //   the model.
-// INT_VALUE
+// INTEGER
 //   a bidirectional binding between the value of the view and the model,
 //   such model stores and integer and the view stores a string.
 // INPUT_TYPE
@@ -170,7 +170,8 @@ Binding.READONLY=function(config) {
 //
 // Creats a binding that stores an integer in the model and a string in the view
 //
-Binding.INT_VALUE=function(config) {
+Binding.INTEGER=function(config) {
+
   return new Binding(config, {
     viewAdapter: parseInt,
     modelAdapter: Binding.TO_STRING,
