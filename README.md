@@ -130,6 +130,13 @@ an accessor returns the value of the accessed element. When invoked with one arg
 an accessor is used to set the value accessed element to the specified argument.
 
 
+Adapters
+========
+Model adapters are functions, used by a binding's update function, to adapt values produced by 
+the bound model element into the type expected by the bound view element. 
+
+View adapters are functions, used by a binding's read function, to adapt values produced by 
+the bound view element into the type expected by the bound model element.
 
 AUTHOR
 ======
