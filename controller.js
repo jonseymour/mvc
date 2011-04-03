@@ -1,19 +1,10 @@
 function Controller(config)
 {
-  if (config.init) {
-    this.init = config.init;
-  }
   this.view = new View(config.view);
   this.model = new Model(config.model);
   this.bindingConfigs = config.bindings;
   this.bind(this.model, this.view);
-  this.init();
 }
-
-Controller.prototype.init= function()
-{
-  this.update();
-};
 
 Controller.prototype.view = {};
 
