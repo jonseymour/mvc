@@ -42,14 +42,18 @@ InputAccessor.prototype.set= function(arg) {
   return undefined;
 };
 
+InputAccessor.DEFAULT_BINDING = {};
+InputAccessor.DEFAULT_BINDING.button=Binding.ACTION;
+InputAccessor.DEFAULT_BINDING.submit=Binding.ACTION;
+InputAccessor.DEFAULT_BINDING.checkbox=Binding.INPUT_CHECKED;
+
 InputAccessor.prototype.defaultBinding = function() {
-  if (this.input.type == 'button' || this.input.type == 'submit') {
-    return Binding.ACTION();
-  } else if (this.input.type == 'checkbox') {
-    return Binding.INPUT_CHECKED();
-  } else {
-    return Binding.INPUT_VALUE();
-  }
+    var constructor = InputAccessor.DEFAULT_BINDING[this.input.type];
+    if (constructor) {
+	return constructor();
+    } else {
+	return Binding.INPUT_VALUE();
+    }
 };
 
 function ElementAccessor(element)
