@@ -126,13 +126,17 @@ Binding.TO_STRING = function(arg) {
 Binding.INPUT_VALUE=function(config) {
   return new Binding(config,
   {
+    onblur: function() {
+      this.read();
+      return true;
+    },
     bind: function(model, view, controller) {
       var binding=this;
       Binding.prototype.bind.apply(this, arguments);
       if (view.input) {
 	view.input.onblur = controller.intercept(
 	  function() {
-	    binding.read();
+	    return binding.onblur();
 	  }
 	);
       }
@@ -143,17 +147,17 @@ Binding.INPUT_VALUE=function(config) {
 Binding.ACTION=function(config) {
   return new Binding(config,
   {
-    read: Binding.NOOP,
     update: Binding.NOOP,
     onclick: function() {
-	this.model();
+      this.read();
+      return true;
     },
     bind: function(model, view, controller) {
 	var binding = this;
 	Binding.prototype.bind.apply(this, arguments);
 	view.input.onclick = controller.intercept(
 	    function() {
-		binding.onclick();
+		return binding.onclick();
 	    });
 	return;
     }
@@ -175,13 +179,17 @@ Binding.INTEGER=function(config) {
   return new Binding(config, {
     viewAdapter: parseInt,
     modelAdapter: Binding.TO_STRING,
+    onblur: function() {
+      this.read();
+      return true;
+    },
     bind: function(model, view, controller) {
       var binding=this;
       Binding.prototype.bind.apply(this, arguments);
       if (view.input) {
 	view.input.onblur = controller.intercept(
 	  function() {
-	    binding.read();
+	    return binding.onblur();
 	  }
 	);
       }
@@ -212,14 +220,17 @@ Binding.INPUT_CHECKED=function(config) {
     update: function() {
       this.view.input.checked = this.modelAdapter(this.model());
     },
+    onchange: function() {
+      this.read();
+      return true;
+    },
     bind: function(model, view, controller) {
       var binding=this;
       Binding.prototype.bind.apply(this, arguments);
       if (view.input) {
 	view.input.onchange = controller.intercept(
 	  function() {
-	    binding.read();
-	    return true;
+	    return binding.onchange();
 	  }
 	);
       }
