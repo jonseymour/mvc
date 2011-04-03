@@ -278,53 +278,56 @@ Binding.QUERY=function() {
     return new Binding
     (
 	{
-	    read: function(arg) {
-		var
-		query=location.search,
-		pairs=query.substring(1).split('&'),
-		result = {},
-		name,
-		value,
-		i,
-		pair;
-
-		if (arg || this.auto) {
-		    if (pairs != '') {
-			for (i in pairs) {
-			    pair=pairs[i];
-			    i=pair.indexOf('=');
-
-			    if (i>=0) {
-				name = decodeURIComponent(pair.substring(0, i));
-				value = decodeURIComponent(pair.substring(i+1));
-			    } else {
-				name = decodeURIComponent(pair);
-				value = '';
-			    }
-			    result[name] = value;
-			}
-		    }
-		    this.model(result);
-		}
-		return;
-	    },
 	    modelAdapter: Binding.QUERY.ENCODER,
+	    viewAdapter: Binding.QUERY.DECODER,
+	    read: function(arg) {
+	      if (arg || this.auto) {
+		this.model(this.viewAdapter(location.search));
+	      }
+	    },
 	    update: function(arg) {
-		if (arg || this.auto) {
-		    location.replace(location.href.split('?')[0] + '?' + this.modelAdapter(this.model()));
-		}
+	      if (arg || this.auto) {
+		location.replace(location.href.split('?')[0] + this.modelAdapter(this.model()));
+	      }
 	    },
 	    auto: false
 	}
     );
 };
 
+Binding.QUERY.DECODER=function(query) {
+  var
+  i,
+  pairs=query.substring(1).split('&'),
+  result = {},
+  name,
+  value,
+  pair;
+
+  if (pairs != '') {
+    for (i in pairs) {
+      pair=pairs[i];
+      i=pair.indexOf('=');
+
+      if (i>=0) {
+	name = decodeURIComponent(pair.substring(0, i));
+	value = decodeURIComponent(pair.substring(i+1));
+      } else {
+	name = decodeURIComponent(pair);
+	value = '';
+      }
+      result[name] = value;
+    }
+  }
+  return result;
+};
+
 Binding.QUERY.ENCODER = function(map) {
     var
-    search='',
+    search='?',
     name;
     for (name in map) {
-	if (search != '') {
+	if (search != '?') {
 	    search = search + "&";
 	}
 	search += encodeURIComponent(name) + '=' + encodeURIComponent(map[name] || '');
