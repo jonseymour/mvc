@@ -1,16 +1,38 @@
 function Controller(config)
 {
-  this.view = new View(config.view);
-  this.model = new Model(config.model);
-  this.bindingConfigs = config.bindings;
-  this.bind(this.model, this.view);
+    this.loader = function(f) {
+	var
+	controller = this;
+
+	return function() {
+	    var proceed;
+
+	    try {
+
+		controller.model = new Model(config.model);
+		controller.view = new View(config.view);
+		controller.bind(config.bindings);
+
+		if (typeof f == 'function') {
+		    proceed = f.apply(controller);
+		}
+
+		if (proceed) {
+		    controller.update();
+		}
+
+	    } catch (x) {
+		window.alert(x.lineNumber + ': ' + x);
+		throw x;
+	    }
+	    return;
+	};
+    };
 }
 
 Controller.prototype.view = {};
 
 Controller.prototype.model = {};
-
-Controller.prototype.bindingConfigs = {};
 
 Controller.prototype.bindings = {};
 
@@ -18,7 +40,7 @@ Controller.prototype.read = function() {
     var b;
 
     for (b in this.bindings) {
-	this.bindings[b].read();
+	this.bindings[b].read.apply(this.bindings[b], arguments);
     }
 };
 
@@ -26,13 +48,16 @@ Controller.prototype.update = function() {
     var b;
 
     for (b in this.bindings) {
-	this.bindings[b].update();
+	this.bindings[b].update.apply(this.bindings[b], arguments);
     }
 
+    return;
 };
 
-Controller.prototype.bind = function(model, view) {
+Controller.prototype.bind = function(config) {
   var
+    model=this.model,
+    view=this.view,
     controller=this,
     m, // model accessor
     n, // view name
@@ -42,13 +67,11 @@ Controller.prototype.bind = function(model, view) {
     bb,
     t;
 
-    this.model = model ? model : this.model;
-    this.view = view ? view : this.view;
     this.bindings = {};
 
     for (n in view) {
 	v = view[n];
-	if (!this.bindingConfigs[n]) {
+	if (!config[n]) {
 	    b = v.defaultBinding();
 	    this.bindings[n] = b;
 	    m = model[n];
@@ -78,12 +101,12 @@ Controller.prototype.bind = function(model, view) {
     };
 
 
-    for (n in this.bindingConfigs) {
-	b = this.bindingConfigs[n];
+    for (n in config) {
+	b = config[n];
 	if (b instanceof Array) {
 	    bb = [];
-	    for (b in this.bindingConfigs[n]) {
-		bb.push(configure(n, (this.bindingConfigs[n])[b]));
+	    for (b in config[n]) {
+		bb.push(configure(n, (config[n])[b]));
 	    }
 	    b = Binding.MULTI(bb);
 	} else {
@@ -102,7 +125,7 @@ Controller.prototype.intercept = function(f)
 	try {
 	    return f.apply(this);
 	} catch (x) {
-	    window.alert(x.lineNo + ': ' + x);
+	    window.alert(x.lineNumber + ': ' + x);
 	    throw x;
 	} finally {
 	    self.update();
