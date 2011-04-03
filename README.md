@@ -15,8 +15,9 @@ The controller is initialized by binding the result of a call to its loader func
 window.onload event, as per the example below.
 
 <pre>
- window.onload=
-    new mvc.Controller(
+ window.onload=(function () 
+ {
+    return new mvc.Controller(
 	{
 	    model: {
 		// ...
@@ -28,6 +29,7 @@ window.onload event, as per the example below.
 		// ...
 	    }
 	}).loader();
+ })();
 </pre>
 Models
 ======
@@ -35,35 +37,36 @@ A model is a map of model elements. Each model element is represented by a funct
 
 A model is configured by a map. Any value in the configuration map which is a function
 is wrapped by a closure that ensures that the function is invoked with 'this' referring
-to the model. Any non-value in the configuration map which is not a function is used
-initialize a private member variable and a public accessor function that can be used to get and set
-that variable.
+to the model. Any value in the configuration map which is not a function is used
+initialize a private member variable and a public accessor function that may be used to get and set
+the value of that variable.
 
 View
 ====
-A view is a map of view elements, where a view element corresponds to a node in the DOM model
+A view is a map of view elements, where a view element corresponds to a node in the DOM 
 or a form input field. 
 
-Each view element is represented by an accessor that can be used to read or update state 
+Each view element is represented by an accessor that can be used to read or update the state 
 associated with the view element.
 
-Each view element has a default binding that can be used to update the value of the view element.
+Each view element has a default binding that can be used to read or update the 
+value of the view element.
 
 Binding
 =======
 A binding is an object that knows how to read from the view into the model and, conversely, to
-update the model from the view. Bindings typically transfer the value of the model element to the
+update the view from the model. Bindings typically transfer the value of the model element to the
 value of the view element and vice versa but bindings may also be used to bind the value of a model
 element to some other attribute of a view element, such as its disabled or checked flag or its type
 attribute.
 
-Each view element receives a default binding to a model element that has a matching name, if any. If there is 
-no matching model element, or the default binding is not appropriate one or more alternate bindings 
-maybe specified via the map of bindings.
+Each view element receives a default binding to a model element that has a matching name, if any. 
+If there is no matching model element, or the default binding is not appropriate one or more 
+alternate bindings maybe specified via the map of bindings.
 
 Bindings are constructed by passing a configuration map to a binding constructor. Bindings 
-can be configured by providing alternative implementations of the following functions and properties in the 
-configuration map:
+can be configured by providing alternative implementations of the following functions and 
+properties in the configuration map:
 
 <dl>
   <dt>read(force)</dt>
@@ -111,17 +114,17 @@ configuration map:
 
   <dt>model</dt>
   <dd>
-    <p>Specifies the name of the model elements to which the binding applies.</p>
+    <p>Specifies the name(s) of the model element(s) to which the binding applies.</p>
     <p>If the value is a string, then the created binding is bound to a model element with the same name or to an 
     no-op accessor otherwise.</p>
     <p>If the value is an array, then a model accessor is created which calls the model accessors of the named
       elements and creates a map whose keys are the specified names and whose values are the result of
-    calling the accessors of the specified model elements.</p>
-    <p>If the value is an array, then a model accessor is created which calls the model accessors of the named
+    calling the accessors of the model elements specified by those names.</p>
+    <p>If the value is a map, then a model accessor is created which calls the model accessors of the named
       elements and creates a map whose keys are the values of the specified map and whose values are the result
       of calling the accessors of the model elements specified by the keys. [ NOT CURRENTLY IMPLEMENTED ].
     <p>If this value is not specified, the binding is bound to a model element with the same name as the 
-      view element if such an element exists or to a noop accessor otherwise.</p>
+      view element if such an element exists or to a no-op accessor otherwise.</p>
   </dd>
 
 </dl>
