@@ -53,7 +53,7 @@ Binding
 =======
 A binding is an object that knows how to read from the view into the model and, conversely, to
 update the model from the view. Bindings typically transfer the value of the model element to the
-value of the view element and vice versa but bindings can also be used to bind the value of a model
+value of the view element and vice versa but bindings may also be used to bind the value of a model
 element to some other attribute of a view element, such as its disabled or checked flag or its type
 attribute.
 
@@ -64,6 +64,7 @@ maybe specified via the map of bindings.
 Bindings are constructed by passing a configuration map to a binding constructor. Bindings 
 can be configured by providing alternative implementations of the following functions and properties in the 
 configuration map:
+
 <dl>
   <dt>read(force)</dt>
   <dd>
