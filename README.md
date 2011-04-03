@@ -41,8 +41,13 @@ that variable.
 
 View
 ====
-A view is a map of view elements. Each view element is represented by an accessor that can be
-used to read or update some state associated with the view element.
+A view is a map of view elements, where a view element corresponds to a node in the DOM model
+or a form input field. 
+
+Each view element is represented by an accessor that can be used to read or update state 
+associated with the view element.
+
+Each view element has a default binding that can be used to update the value of the view element.
 
 Binding
 =======
