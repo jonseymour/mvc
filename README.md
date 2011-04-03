@@ -57,17 +57,72 @@ value of the view element and vice versa but bindings can also be used to bind t
 element to some other attribute of a view element, such as its disabled or checked flag or its type
 attribute.
 
-Each view element receives a default binding to the a matching model element, if any. If there is no matching model element, or the default binding is not appropriate one or alternate bindings may be specified via the map of
-bindings.
+Each view element receives a default binding to a model element that has a matching name, if any. If there is 
+no matching model element, or the default binding is not appropriate one or more alternate bindings 
+maybe specified via the map of bindings.
 
-Accessors are functions that address a single model or view element. When invoked with no arguments, an accessor
-returns the value of the accessed element. When invoked with one argument, an accessor is used to modify the
-accessed element.
+Bindings are constructed by passing a configuration map to a binding constructor. Bindings 
+can be configured by providing alternative implementations of the following functions and properties in the 
+configuration map:
+<dl>
+  <dt>read(force)</dt>
+  <dd>
+    <p>The default implementation calls the view accessor with no arguments, applies the viewAdapter 
+      to the result and then calls the model accessor with the result of the viewAdapter call as the only argument.</p>
+    <p>If the auto property of the binding is false, the read method does nothing unless the force argument is true.</p>
+  </dd>
 
-Model adapters are functions which adapt values produced by the bound model element into the type expected by the bound view element. View adapters are functions which adapt values produced by the bound view element into the type expected by the bound model element.
+  <dt>update(force)</dt>
+  <dd>
+    <p>The default implementation calls the model accessor, applies the modelAdapter to the result and then
+    calls the view accessor with the result of the modelAdapter call as the only argument.</p>
+    <p>If the auto property of the binding is false, the update method does nothing unless the force argument is true.</p>
+  </dd>
 
-DISCLAIMER
-==========
+  <dt>viewAdapter(view_value)</dt>
+  <dd><p>The view adapter takes a value of the type produced by the view accessor and converts it into a value
+    of the type accepted by the model.</p></dd>
+
+  <dt>modelAdapter(model_value)</dt>
+  <dd>
+    <p>The model adapter takes a value of the type produced by the model accessor and converts it into a value
+    of the type accepted by the view.</p>
+  </dd>
+
+  <dt>bind(model_accessor, view_accessor, controller)</dt>
+  <dd>
+    <p>
+      The default implementation initializes the model, view and controller properties of the binding. If the 
+      view accessor exposes event hooks, a closure is bound to the event which causes the controller to 
+      invoke a method on the binding. 
+    </p>
+  </dd>
+
+  <dt>auto</dt>
+  <dd>	
+    <p>Configures the default behaviour of read and update if a force argument is fals-ish.</p>
+    <p>The default value is true, which means that data values are transferred irrespective of the setting
+      of the force flag. If the value is false, value safe only transfered if the read and update methods
+      are passed a tru-ish argument.</p>
+  </dd>
+
+  <dt>model</dt>
+  <dd>
+    <p>Specifies the name of the model elements to which the binding applies.</p>
+    <p>If this value is not specified, the binding is bound to a model element with the same name as the 
+      view element.</p>
+    <p>If the value is an array, then a model accessor is created which calls the model accessors of the named
+      elements and creates a map whose keys are the specified names and whose values are the result of
+    calling the accessors of the specified model elements.</p>
+    <p>If the value is an array, then a model accessor is created which calls the model accessors of the named
+      elements and creates a map whose keys are the values of the specified map and whose values are the result
+      of calling the accessors of the model elements specified by the keys. [ NOT CURRENTLY IMPLEMENTED ].
+  </dd>
+
+</dl>
+
+
+
 
 AUTHOR
 ======
