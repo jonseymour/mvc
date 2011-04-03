@@ -80,13 +80,15 @@ configuration map:
   </dd>
 
   <dt>viewAdapter(view_value)</dt>
-  <dd><p>The view adapter takes a value of the type produced by the view accessor and converts it into a value
-    of the type accepted by the model.</p></dd>
+  <dd>
+    <p>A view adapter is a function, used by a binding's read function, to adapt values produced by 
+    the bound view accessor into the type expected by the bound model accessor.</p>
+  </dd>     	   
 
   <dt>modelAdapter(model_value)</dt>
   <dd>
-    <p>The model adapter takes a value of the type produced by the model accessor and converts it into a value
-    of the type accepted by the view.</p>
+    <p>A model adapter is a function, used by a binding's update function, to adapt values 
+    produced by the bound model accessor into the type expected by the bound view accessor.</p>
   </dd>
 
   <dt>bind(model_accessor, view_accessor, controller)</dt>
@@ -130,13 +132,6 @@ an accessor returns the value of the accessed element. When invoked with one arg
 an accessor is used to set the value accessed element to the specified argument.
 
 
-Adapters
-========
-Model adapters are functions, used by a binding's update function, to adapt values produced by 
-the bound model element into the type expected by the bound view element. 
-
-View adapters are functions, used by a binding's read function, to adapt values produced by 
-the bound view element into the type expected by the bound model element.
 
 AUTHOR
 ======
