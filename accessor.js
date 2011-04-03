@@ -25,7 +25,7 @@ function Accessor(target, props)
 Accessor.prototype.get = Accessor.NOOP;
 Accessor.prototype.set = Accessor.NOOP;
 Accessor.prototype.defaultBinding = function() {
-    return Binding.VALUE();
+  throw new Error("no binding defined for accessor");
 };
 
 function InputAccessor(input)
@@ -48,7 +48,7 @@ InputAccessor.prototype.defaultBinding = function() {
   } else if (this.input.type == 'checkbox') {
     return Binding.INPUT_CHECKED();
   } else {
-    return Binding.VALUE();
+    return Binding.INPUT_VALUE();
   }
 };
 

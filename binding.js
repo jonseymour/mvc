@@ -15,7 +15,7 @@
 // to the view's type. The viewAdapter adapts values of the view's type
 // to the model's type.
 //
-// VALUE
+// INPUT_VALUE
 //   Creates a binding between the value of an view input element and
 //   the model.
 // INT_VALUE
@@ -123,7 +123,7 @@ Binding.TO_STRING = function(arg) {
 //
 // Creates a simple binding between the value of the view and the model.
 //
-Binding.VALUE=function(config) {
+Binding.INPUT_VALUE=function(config) {
   return new Binding(config,
   {
     bind: function(model, view, controller) {
