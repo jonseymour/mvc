@@ -18,6 +18,7 @@ function Accessor(target, props)
     }
   }
   result.defaultBinding = target.defaultBinding;
+  result.hooks = target.hooks;
 
   return result;
 }
@@ -40,6 +41,42 @@ InputAccessor.prototype.get=function() {
 InputAccessor.prototype.set= function(arg) {
   this.input.value = arg;
   return undefined;
+};
+
+InputAccessor.HOOKS = {};
+InputAccessor.HOOKS.hook=function(name, binding, impl)
+{
+    binding.view.input[name] = binding.controller.intercept(
+	function () {
+	    return impl.apply(binding);
+	}
+    );
+};
+
+InputAccessor.HOOKS.ACTION={
+  onclick: InputAccessor.HOOKS.hook
+};
+InputAccessor.HOOKS.DATA={
+  onblur: InputAccessor.HOOKS.hook,
+  onfocus: InputAccessor.HOOKS.hook
+};
+
+InputAccessor.HOOKS.FAST_DATA={
+  onchange: InputAccessor.HOOKS.hook,
+};
+
+InputAccessor.HOOKS.button=InputAccessor.HOOKS.ACTION;
+InputAccessor.HOOKS.submit=InputAccessor.HOOKS.ACTION;
+InputAccessor.HOOKS.checkbox=InputAccessor.HOOKS.FAST_DATA;
+
+InputAccessor.prototype.hooks = function()
+{
+    var hooks = InputAccessor.HOOKS[this.input.type];
+    if (hooks) {
+	return hooks;
+    } else {
+	return InputAccessor.HOOKS.DATA;
+    }
 };
 
 InputAccessor.DEFAULT_BINDING = {};

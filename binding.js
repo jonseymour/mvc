@@ -129,19 +129,8 @@ Binding.INPUT_VALUE=function(config) {
     onblur: function() {
       this.read();
       return true;
-    },
-    bind: function(model, view, controller) {
-      var binding=this;
-      Binding.prototype.bind.apply(this, arguments);
-      if (view.input) {
-	view.input.onblur = controller.intercept(
-	  function() {
-	    return binding.onblur();
-	  }
-	);
-      }
     }
-  });
+  })
 };
 
 Binding.ACTION=function(config) {
@@ -151,15 +140,6 @@ Binding.ACTION=function(config) {
     onclick: function() {
       this.read();
       return true;
-    },
-    bind: function(model, view, controller) {
-	var binding = this;
-	Binding.prototype.bind.apply(this, arguments);
-	view.input.onclick = controller.intercept(
-	    function() {
-		return binding.onclick();
-	    });
-	return;
     }
   });
 };
@@ -182,17 +162,6 @@ Binding.INTEGER=function(config) {
     onblur: function() {
       this.read();
       return true;
-    },
-    bind: function(model, view, controller) {
-      var binding=this;
-      Binding.prototype.bind.apply(this, arguments);
-      if (view.input) {
-	view.input.onblur = controller.intercept(
-	  function() {
-	    return binding.onblur();
-	  }
-	);
-      }
     }
   });
 };
@@ -223,17 +192,6 @@ Binding.INPUT_CHECKED=function(config) {
     onchange: function() {
       this.read();
       return true;
-    },
-    bind: function(model, view, controller) {
-      var binding=this;
-      Binding.prototype.bind.apply(this, arguments);
-      if (view.input) {
-	view.input.onchange = controller.intercept(
-	  function() {
-	    return binding.onchange();
-	  }
-	);
-      }
     }
   });
 };
@@ -408,7 +366,19 @@ Binding.prototype.update = Binding.ADAPTED_UPDATE;
 //
 Binding.prototype.bind=function(model, view, controller)
 {
+    var h,hook,hooks;
+
     this.model = model;
     this.view = view;
     this.controller = controller;
+
+    if (this.view && typeof this.view.hooks == 'function') {
+	hooks = this.view.hooks();
+	for (h in hooks) {
+	    hook=hooks[h];
+	    if (this[h]) {
+		hook(h, this, this[h]);
+	    }
+	}
+    }
 };
