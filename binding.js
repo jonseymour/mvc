@@ -136,9 +136,10 @@ Binding.INPUT_VALUE=function(config) {
 Binding.ACTION=function(config) {
   return new Binding(config,
   {
+    read: Binding.NOOP,
     update: Binding.NOOP,
     onclick: function() {
-      this.read();
+      this.model();
       return true;
     }
   });
