@@ -18,8 +18,8 @@ function View(defs)
 	    if (!form) {
 		continue;
 	    }
-	    for (var f in form.elements) {
-		api[form[f].name] = new InputAccessor(form[f]);
+	    for (f in form.elements) {
+		api[form.elements[f].name] = new InputAccessor(form.elements[f]);
 	    }
 	} else if (def.type == 'element') {
 	  elt = document.getElementById(def.id);
