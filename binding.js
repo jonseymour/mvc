@@ -206,7 +206,13 @@ Binding.INNER_HTML=function(config)
   return new Binding(config, {
     read: Binding.NOOP,
     update: function() {
-      this.view.element.innerHTML = this.modelAdapter(this.model());
+	try {
+	    this.view.element.innerHTML = this.modelAdapter(this.model());
+	} catch (x) {
+	    console.error("failed to apply update:"+x);
+	    console.dir(x);
+	    console.dir(this);
+	}
     }
   });
 };
