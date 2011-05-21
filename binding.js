@@ -217,6 +217,29 @@ Binding.INNER_HTML=function(config)
   });
 };
 
+//
+// Creates a read-only binding that binds the model to the
+// innerHTML property of a view element.
+//
+Binding.CLASS=function(config)
+{
+  return new Binding(config, {
+    read: Binding.NOOP,
+    update: function() {
+	try {
+	    var name=this.modelAdapter(this.model());
+	    if (name) {
+		this.view.element.className = name;
+	    }
+	} catch (x) {
+	    console.error("failed to apply update:"+x);
+	    console.dir(x);
+	    console.dir(this);
+	}
+    }
+  });
+};
+
 Binding.ATTRIBUTE=function(config)
 {
   return new Binding(config, {
