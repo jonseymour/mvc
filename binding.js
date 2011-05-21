@@ -264,7 +264,8 @@ Binding.QUERY=function() {
 	    },
 	    update: function(arg) {
 	      if (arg || this.auto) {
-		location.replace(location.href.split('?')[0] + this.modelAdapter(this.model()));
+		var tmp = location.href.split('?')[0] + this.modelAdapter(this.model());
+		location.replace(tmp);
 	      }
 	    },
 	    auto: false
