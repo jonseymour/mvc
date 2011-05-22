@@ -100,8 +100,14 @@ Binding.ADAPTED_READ = function() {
 //
 // An update function that directly updates the view with the model.
 //
-Binding.DIRECT_UPDATE = function() {
-  this.view(this.model());
+Binding.DIRECT_UPDATE = function(arg) {
+  if (arg || this.auto || this.model.update) {
+      try {
+	  this.view(this.model());
+      } finally {
+	  this.model.update = false;
+      }
+  }
 };
 
 //
@@ -109,7 +115,13 @@ Binding.DIRECT_UPDATE = function() {
 // the model adapter to the model.
 //
 Binding.ADAPTED_UPDATE = function() {
-  this.view(this.modelAdapter(this.model()));
+  if (arg || this.auto || this.model.update) {
+      try {
+	  this.view(this.modelAdapter(this.model()));
+      } finally {
+	  this.model.update = false;
+      }
+  }
 };
 
 //
