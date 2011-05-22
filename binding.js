@@ -123,14 +123,13 @@ Binding.TO_STRING = function(arg) {
 //
 // Creates a simple binding between the value of the view and the model.
 //
-Binding.INPUT_VALUE=function(config) {
-  return new Binding(config,
-  {
+Binding.INPUT_VALUE = function(config) {
+  return new Binding(config, {
     onblur: function() {
       this.read();
       return true;
     }
-  })
+  });
 };
 
 Binding.ACTION=function(config) {
