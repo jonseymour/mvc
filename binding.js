@@ -216,6 +216,22 @@ Binding.INNER_HTML=function(config)
   });
 };
 
+Binding.TITLE=function(config)
+{
+  return new Binding(config, {
+    read: Binding.NOOP,
+    update: function() {
+	try {
+	    document.title = this.modelAdapter(this.model());
+	} catch (x) {
+	    console.error("failed to apply update:"+x);
+	    console.dir(x);
+	    console.dir(this);
+	}
+    }
+  });
+};
+
 //
 // Creates a read-only binding that binds the model to the
 // innerHTML property of a view element.
