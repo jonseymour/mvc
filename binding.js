@@ -273,6 +273,91 @@ Binding.MULTI=function(bindings)
     );
 };
 
+Binding.ACCESS_STORAGE=function(key)
+{
+    try {
+	if (window[key]) {
+	    return window[key];
+	} else {
+	    return null;
+	}
+    } catch (x) {
+	// FireFox does not support session storage on file urls
+	return null;
+    }
+};
+
+Binding.DECODE_STORAGE=function(storage) {
+    var
+    map = {},
+    v,
+    i;
+
+    if (storage) {
+	for (i = 0; i < storage; i++) {
+	    k = storage.getKey(i);
+	    v = storage.getItem(k);
+	    map[k] = v;
+	}
+    }
+
+    return map;
+};
+
+Binding.ENCODE_STORAGE=function(map, storage) {
+    var
+    k;
+
+    if (map && storage) {
+	storage.clear();
+	for (k in map) {
+	    storage.setItem(k, map[k]);
+	}
+    }
+};
+
+Binding.SESSION_STORAGE = function(config) {
+  return new Binding(config, {
+	model: 'sessionStorage',
+	read: function(arg) {
+	    if (arg || this.auto) {
+		var map = Binding.DECODE_STORAGE(Binding.ACCESS_STORAGE('sessionStorage'));
+		this.model(this.viewAdapter(map));
+	    }
+	},
+	update: function(arg) {
+	    if (arg || this.auto) {
+		Binding.ENCODE_STORAGE(
+		    this.modelAdapter(this.model()),
+		    Binding.ACCESS_STORAGE('sessionStorage')
+		);
+	    }
+	},
+	auto: false
+  });
+};
+
+Binding.LOCAL_STORAGE = function(config) {
+  return new Binding(config, {
+	model: 'localStorage',
+	read: function(arg) {
+	    if (arg || this.auto) {
+		var map = Binding.DECODE_STORAGE(Binding.ACCESS_STORAGE('localStorage'));
+		this.model(this.viewAdapter(map));
+	    }
+	},
+	update: function(arg) {
+	    if (arg || this.auto) {
+		Binding.ENCODE_STORAGE(
+		    this.modelAdapter(this.model()),
+		    Binding.ACCESS_STORAGE('localStorage')
+		);
+	    }
+	},
+	auto: false
+  });
+};
+
 Binding.QUERY=function() {
     return new Binding
     (
