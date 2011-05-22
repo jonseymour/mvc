@@ -14,19 +14,19 @@ function View(defs)
     for (m in defs) {
 	def = defs[m];
 	if (def.type == 'form') {
-	    form = document.forms[def.id];
+	    form = document.forms[m];
 	    if (!form) {
 		continue;
 	    }
 	    for (f in form.elements) {
 		api[form.elements[f].name] = new InputAccessor(form.elements[f]);
 	    }
-	} else if (def.type == 'element') {
-	  elt = document.getElementById(def.id);
-	  api[m] = new ElementAccessor(elt);
+	}
+	elt=document.getElementById(m);
+	if (elt) {
+	    api[m] = new ElementAccessor(elt);
 	} else {
-	  elt = document.getElementById(m);
-	  api[m] = new ElementAccessor(elt);
+	    throw new Error('cannot find view element named: ' + m);
 	}
     }
     return api;
