@@ -114,7 +114,7 @@ Binding.DIRECT_UPDATE = function(arg) {
 // An update function that updates the view with the result of applying
 // the model adapter to the model.
 //
-Binding.ADAPTED_UPDATE = function() {
+Binding.ADAPTED_UPDATE = function(arg) {
   if (arg || this.auto || this.model.update) {
       try {
 	  this.view(this.modelAdapter(this.model()));
