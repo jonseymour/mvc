@@ -503,6 +503,7 @@ Binding.prototype.modelAdapter = Binding.IDENTITY_MAP;
 Binding.prototype.viewAdapter = Binding.IDENTITY_MAP;
 Binding.prototype.read = Binding.ADAPTED_READ;
 Binding.prototype.update = Binding.ADAPTED_UPDATE;
+Binding.prototype.auto = true;
 
 //
 // Configure the model and view accessor functions for a binding.
