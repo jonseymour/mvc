@@ -143,7 +143,7 @@ MultiAccessor.prototype.get = function()
 
   for (i in this.keys) {
     k=this.keys[i];
-    map[k] = this.model[k]();
+    map[i] = this.model[k]();
   }
   return map;
 };

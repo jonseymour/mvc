@@ -86,7 +86,7 @@ Controller.prototype.bind = function(config) {
 	var m,v;
 
 	if (typeof binding.model != 'function') {
-	    if (binding.model instanceof Array) {
+	    if (binding.model instanceof Array || typeof binding.model == 'object') {
 		m = new MultiAccessor(model, binding.model);
 	    } else {
 		m = model[binding.model];
