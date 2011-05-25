@@ -386,6 +386,31 @@ Binding.LOCAL_STORAGE = function(config) {
   });
 };
 
+Binding.OPTIONS=function(config) {
+    return new Binding(
+	config,
+	{
+	    read: function() {
+		this.model(
+		    {
+			value: this.viewAdapter(this.view())
+		    }
+		);
+	    },
+	    update: function() {
+		var pair = this.modelAdapter(this.model());
+		for (var i = this.view.input.length; i > 0; i--) {
+		    this.view.input.remove(i-1);
+		}
+		for (var x in pair.options) {
+		    var xx = pair.options[x];
+		    this.view.input.add(new Option(xx[1], xx[0], false, false), null);
+		}
+	    }
+	}
+    );
+};
+
 Binding.QUERY=function() {
     return new Binding
     (
